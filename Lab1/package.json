@@ -1,0 +1,19 @@
+{
+  "name": "CS554_Lab1",
+  "version": "1.0.0",
+  "description": "Review of API Development (Lab 1 CS554)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christian Montero 10442644",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.2",
+    "node-uuid": "^1.4.8",
+    "uuid": "^3.4.0"
+  }
+}
