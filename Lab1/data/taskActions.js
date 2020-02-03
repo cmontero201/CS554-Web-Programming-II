@@ -37,10 +37,16 @@ let exportedMethods = {
             if (y > 100) { y = 100; };
         };
 
+        console.log(`Skip ${n} Take ${y}`)
+
         const taskCollection = await tasks();
         
-        const allTasks = await taskCollection.find({}).limit(y).skip(n).toArray();   //https://www.w3resource.com/mongodb/mongodb-skip-limit.php
-        return allTasks;
+        if (y==0) {
+            return [];
+        } else {
+            const allTasks = await taskCollection.find({}).limit(y).skip(n).toArray();   //https://www.w3resource.com/mongodb/mongodb-skip-limit.php
+            return allTasks;
+        }
     },
 
     async getTaskByID(taskID) {
@@ -93,9 +99,13 @@ let exportedMethods = {
             if (newTitle === undefined && newDesc === undefined && newTimeEst === undefined && newCompStat === undefined) throw new SyntaxError("At least one (1) field edit must be provided");
             
             if (newTitle === undefined) { newTitle = oldTask.title; }; 
+            if (typeof newTitle !== "string" || newTitle === "") throw new SyntaxError("Task title must be an alphabetical string and cannot be empty");
             if (newDesc === undefined) { newDesc = oldTask.description; };
+            if (typeof newDesc !== "string" || newDesc === "") throw new SyntaxError("Task description must be an alphabetical string and cannot be empty");              
             if (newTimeEst === undefined) { newTimeEst = oldTask.hoursEstimated; };
+            if (typeof newTimeEst !== "number" || newTimeEst === undefined || newTimeEst < 0) throw new SyntaxError("Time estimation must be non-negative and cannot be empty");               
             if (newCompStat === undefined) { newCompStat = oldTask.completed; };
+            if (typeof newCompStat !== "boolean" || newCompStat === undefined) throw new SyntaxError("Completion Status must be true or false and cannot be empty");
 
             update = {
                 "title": newTitle,

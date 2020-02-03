@@ -21,7 +21,7 @@ router.get("/:id", async (req, res) => {
         res.status(200).json(task);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(404).json( {"error": err.message} );
     };
 });
 
@@ -45,7 +45,7 @@ router.put("/:id", async (req, res) => {
         res.status(201).json(update);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(404).json( {"error": err.message} );
     };
 });
 
@@ -63,7 +63,7 @@ router.patch("/:id", async (req, res) => {
         res.status(200).json(edit);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(404).json( {"error": err.message} );
     };
 });
 
@@ -75,7 +75,7 @@ router.post("/:id/comments", async (req, res) => {
         res.status(201).json(comment);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(404).json( {"error": err.message} );
     };
 });
 
@@ -86,7 +86,7 @@ router.delete("/:taskId/:commentId", async (req, res) => {
         res.status(204).json(deleted);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(404).json( {"error": err.message} );
     };
 });
 
