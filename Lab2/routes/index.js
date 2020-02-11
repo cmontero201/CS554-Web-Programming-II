@@ -4,7 +4,7 @@ const constructorMethod = app => {
     app.use("/", portfolioRoutes);
 
     app.use("*", (req, res) => {
-        res.status(404);
+        res.sendStatus(404)
     });
 };
 

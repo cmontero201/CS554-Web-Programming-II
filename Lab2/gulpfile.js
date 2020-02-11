@@ -1,8 +1,11 @@
 const gulp = require("gulp");
+const express = require("express");
 const concatenate = require("gulp-concat");
 const cleanCSS = require("gulp-clean-css");
 const autoPrefix = require("gulp-autoprefixer");
 const gulpSASS = require("gulp-sass");
+const changed = require("gulp-changed");
+const imagemin = require("gulp-imagemin")
 const rename = require("gulp-rename");
 
 const sassFiles = [
@@ -14,7 +17,7 @@ const sassFiles = [
 const vendorJsFiles = [
     './node_modules/jquery/dist/jquery.js',
     './node_modules/popper.js/dist/umd/popper.min.js',
-    './node_modules/bootstrap/dist/js/bootstrap.js'
+    './node_modules/bootstrap/dist/js/bootstrap.min.js'
 ];
 
 // GULP SASS FILES
@@ -40,7 +43,19 @@ gulp.task('js:vendor', function(done) {
     done();
 });
 
-gulp.task('build', gulp.parallel( ['sass', 'js:vendor'] ));     // Runs all specified tasks in parallel
+// GULP OPTIMIZE IMAGES
+const img_src = 'src/images/*.+(jpg)';
+gulp.task('opt-img', function(done) {
+    gulp
+        .src(img_src)
+        .pipe(changed('./public/images'))
+        .pipe(imagemin())
+        .pipe(gulp.dest('./public/images'))
+    done();
+})
+
+
+gulp.task('build', gulp.parallel( ['sass', 'js:vendor', 'opt-img'] ));     // Runs all specified tasks in parallel
 
 // Watch for changes in specified files (auto compiles and runs tasks)
 gulp.task('watch', function(done) {

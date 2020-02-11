@@ -1,6 +1,15 @@
 // Specify what should be imported
-@import "variables"; // Import variables files already specified
+@import "variables"; 
 @import "../../node_modules/bootstrap/scss/bootstrap";
+// @import "../../node_modules/bootstrap/scss/_card";
+// @import "../../node_modules/bootstrap/scss/_mixins";
+// @import "../../node_modules/bootstrap/scss/_grid";
+// @import "../../node_modules/bootstrap/scss/_buttons";
+// @import "../../node_modules/bootstrap/scss/_button-group";
+// @import "../../node_modules/bootstrap/scss/_nav";
+// @import "../../node_modules/bootstrap/scss/_navbar";
+// @import "../../node_modules/bootstrap/scss/_list-group";
+// @import "../../node_modules/bootstrap/scss/_modal";
 
 // Create Rules
 @mixin border-bottom($size) {
@@ -11,35 +20,100 @@
     box-sizing: border-box;
 }
 
-body,
-html {
+body, html{
     background: $body-background;
     color: darken($brand-primary, 20%);
-    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-family: $font;
     font-size: $primary-font-size;
     background-clip: border-box;
+    text-align: center;
 }
-
-p {
-    font-size: $secondary-font-size;
-}
-
-section.#{$main-content-class} {
-    h2 {
-        @include border-bottom(2px);
-    }
-    p {
-        @if $main-content-class==book {
-            font-size: 12pt;
-        }
-        @else {
-            font-size: $secondary-font-size+6pt;
-        }
-        main & {
-            color: $brand-primary;
-        }
-        span {
-            font-style: italic;
-        }
+#heading{
+    background-color: rgb(62, 62, 62);
+    margin: 0px;
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    a {
+        color:white;
     }
 }
+
+// NavBar
+#sidenav-wrapper{
+    border-right-style: solid;
+    border-right-width: .2rem;
+    border-right-color: rgb(62, 62, 62);
+    border-bottom-style: solid;
+    border-bottom-width: .2rem;
+    border-bottom-color: rgb(62, 62, 62);
+}
+.sidenav {
+    padding: 0px;
+}
+.list-group-item-action{
+    color: white;
+}
+
+.list-group-item {
+    border: none;
+    background: $body-background;
+    text-align: left;
+    padding: 10px;
+}
+ul {
+    list-style-type: none;
+    padding-inline-start: 0px;
+}
+li {
+    color: white;
+}
+.nav-tabs{
+    border: none;
+    
+}
+
+// Cards
+#content-wrapper {
+    padding-top: 25px;
+}
+#card-wrapper{
+    max-width: 100%;
+    min-width: 85%;
+}
+.card {
+    display: inline-block;
+    padding: 10px;
+    max-width: 85%;
+    max-height: 95%;
+
+}
+.card-title{
+    margin-bottom: .25rem;
+}
+h2{
+    font-size: medium;
+    font-weight: bold;
+}
+.card-img-top {
+    display: block;
+    max-width: 70%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+// Adapted FromStack Overflow: https://stackoverflow.com/questions/34140793/bootstrap-4-responsive-cards-in-card-columns/43117538#43117538
+.card-columns {
+    @include media-breakpoint-only(xl) {
+      column-count: 3;
+    }
+    @include media-breakpoint-only(lg) {
+      column-count: 3;
+    }
+    @include media-breakpoint-only(md) {
+      column-count: 2;
+    }
+    @include media-breakpoint-only(sm) {
+      column-count: 1;
+    }
+  }
+  //
