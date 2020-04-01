@@ -1,31 +1,27 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import PokemonLink from '../img/PokemonLink.png';
 import BerriesLink from '../img/BerriesLink.png'
 import MachinesLink from '../img/MachinesLink.png'
-import Berries from './Berries';
-// import BerriesLink from '../img/BerriesLink.png';
-// import MachinesLink from '../img/MachinesLink.png';
-
 
 const Landing = () => {
     return (
-        <Container id = 'main'>
-            <Row id = 'desc-title'>
-                <h1> WELCOME TO PALLETE TOWN'S OAK POKéMON RESEARCH LAB!</h1>
+        <Container className = 'main'>
+            <br />
+            <Row className = 'desc-title'>
+                <h1 className = 'desc-head'> WELCOME TO PALLETE TOWN'S <br/> OAK POKéMON RESEARCH LAB!</h1>
             </Row>
             <br />
             <br />
             <Row>
                 <Col lg = {6} md = {6} sm = {12}> 
-                    <Row id = 'desc-title'>
+                    <Row className = 'desc-title'>
                         <h2> What is a Pokémon? </h2>
                     </Row>
-                    <Row id = 'desc'>
+                    <Row className = 'desc'>
                         <p>
                         Did you know that the world is inhabited by creatures known as Pokémon? Pokémon
                         can be found in all corners of the world: some run across sprawling plains, others
@@ -42,10 +38,10 @@ const Landing = () => {
                 </Col>
         
                 <Col lg = {6} md = {6} sm = {12}> 
-                    <Row  id = 'desc-title'>
+                    <Row  className = 'desc-title'>
                         <h2> The Pokédex </h2>
                     </Row>
-                    <Row id = 'desc'>
+                    <Row className = 'desc'>
                         <p>
                         People who catch, train, care for, and battle with Pokémon are known as Pokémon 
                         Trainers. Many trainers traverse the world to perfect their techniques, collecting Gym 
@@ -64,9 +60,9 @@ const Landing = () => {
             <br />
             <br />
 
-            <Row id = 'main-links'>
+            <Row className = 'main-links'>
                 <Col> 
-                    <Link to = {`/pokemon/page/${0}`} > 
+                    <Link to = '/pokemon/page/0'> 
                         <p> Click Here for </p>
                         <img alt = 'PokemonLink' src = {PokemonLink} />
                     </Link>
