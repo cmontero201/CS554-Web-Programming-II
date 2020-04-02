@@ -50,6 +50,7 @@
   align-items: center;
   justify-content: center;
   align-content: center;
+  padding: 5px;;
 }
 
 a {
@@ -87,5 +88,8 @@ a {
 .subhead {
   font-size: 18pt;
   text-decoration: underline;
+}
+.sub {
+  font-size: 9pt;
 }
 
