@@ -29,7 +29,7 @@ function App() {
           <Route path = '/berries/page/:page' component = {Berries} />
           <Route path = '/berries/:id' component = {BerryDetail} />
           <Route path = '/machines/page/:page' component = {Machines} />
-          {/* <Route path = '/machines/:id' component = {MachineDetail} /> */}
+          <Route path = '/machines/:id' component = {MachineDetail} />
           <Route path = "*" component = {NotFound} status = {404} />
         </Switch>
       </Container>    

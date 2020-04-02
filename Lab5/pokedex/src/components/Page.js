@@ -23,7 +23,7 @@ const Page = (props) => {
             </Pagination>
         );
 
-    } else if (props.pageNum[1] === Math.floor(props.pageNum[2] / 20)) {
+    } else if (props.pageNum[1] === Math.floor(props.pageNum[2] / 15)) {
         return (
             <Pagination>
                 <LinkContainer to = {`/${props.pageNum[3]}/page/${page - 1}`}>

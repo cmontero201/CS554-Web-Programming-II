@@ -3,10 +3,11 @@ import { useHistory } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container'
+import Container from 'react-bootstrap/Container';
 import axios from 'axios';
-import noImage from '../img/None.jpeg'
-import NotFound from './NotFound'
+import noImage from '../img/None.jpeg';
+import loading from '../img/loading.png';
+import NotFound from './NotFound';
 
 const PokemonDetail = (props) => {
     const [ pokeData, setPokeData ] = useState(undefined);
@@ -84,57 +85,77 @@ const PokemonDetail = (props) => {
         );
     };
 
-    return (
-        <Container className = 'pokeDetails'>
-            <br />
-            <Button type="button" id = 'button' onClick={() => history.goBack()}>
-                Go back
-            </Button>
-            <br />
-            <br />
-            <Row className = 'imageHeader'>
-                {img}
-            </Row>
-            <br />
-            <Row className = 'detailHead'>
-                <h1> {name} </h1>
-            </Row>
-            <br />
-            <Row xs = {1} sm = {1} md = {2} lg = {4} className = 'detailsContent'>
-                <Col>
-                    <h2 className = 'subhead'> Height: </h2>{Math.floor(height / 12) + "' " + Math.ceil(height % 12) + '"'}
-                </Col>
-                <Col>
-                    <h2 className = 'subhead'> Weight </h2> {(weight)} lbs
-                </Col>
-
-                <Col>
-                    <h2 className = 'subhead'> Type </h2>
-                    <Col className = 'detailsContent'>
-                        {typeDiv}
+    if (pokeData) {
+        return (
+            <Container className = 'pokeDetails'>
+                <br />
+                <Button type="button" id = 'button' onClick={() => history.goBack()}>
+                    Go back
+                </Button>
+                <br />
+                <br />
+                <Row className = 'imageHeader'>
+                    {img}
+                </Row>
+                <br />
+                <Row className = 'detailHead'>
+                    <h1> {name} </h1>
+                </Row>
+                <br />
+                <Row xs = {1} sm = {1} md = {2} lg = {4} className = 'detailsContent'>
+                    <Col>
+                        <h2 className = 'subhead'> Height: </h2>{Math.floor(height / 12) + "' " + Math.ceil(height % 12) + '"'}
                     </Col>
-                </Col>
-
-                <Col>
-                    <h2 className = 'subhead'> Abilites </h2>
-                    <Col className = 'detailsContent'>
-                        {abilities}  
+                    <Col>
+                        <h2 className = 'subhead'> Weight </h2> {(weight)} lbs
                     </Col>
-                    
-                </Col>
-            </Row>
-            <br />
-            <Row >
-                <Col className = 'detailsContent'>
-                    <h2 className = 'subhead'> Moves </h2>
-                    <br />
-                    <Row id = 'moves' xs = {1} sm = {3} md = {4} lg = {6}>
-                        {moves}
-                    </Row>   
-                </Col>
-            </Row>
-        </Container>
-    );
+
+                    <Col>
+                        <h2 className = 'subhead'> Type </h2>
+                        <Col className = 'detailsContent'>
+                            {typeDiv}
+                        </Col>
+                    </Col>
+
+                    <Col>
+                        <h2 className = 'subhead'> Abilites </h2>
+                        <Col className = 'detailsContent'>
+                            {abilities}  
+                        </Col>
+                        
+                    </Col>
+                </Row>
+                <br />
+                <Row >
+                    <Col className = 'detailsContent'>
+                        <h2 className = 'subhead'> Moves </h2>
+                        <br />
+                        <Row id = 'moves' xs = {1} sm = {3} md = {4} lg = {6}>
+                            {moves}
+                        </Row>   
+                    </Col>
+                </Row>
+            </Container>
+        );
+    } else {
+        return (
+            <Container className = 'pokeDetails'>
+                <br />
+                <br />
+                <Row className = 'page' sm = {3} md = {3} lg = {5}>
+                    <Row className = 'page'>
+                        <Row>
+                            <h1> LOADING... </h1>
+                        </Row>
+                        <br />
+                        <Row>
+                            <img alt = 'loading' src = {loading} className = 'loading' />
+                        </Row>
+                    </Row>
+                </Row>
+            </Container>
+        );
+    };
 };
 
 export default PokemonDetail;

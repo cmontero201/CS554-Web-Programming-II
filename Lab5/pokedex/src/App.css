@@ -50,7 +50,7 @@
   align-items: center;
   justify-content: center;
   align-content: center;
-  padding: 5px;;
+  padding: 5px;
 }
 
 a {
@@ -93,3 +93,17 @@ a {
   font-size: 9pt;
 }
 
+.loading {
+  display: block;
+  animation: spin infinite 10s linear;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

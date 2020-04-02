@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container'
+import Container from 'react-bootstrap/Container';
 import axios from 'axios';
-import noImage from '../img/None.jpeg'
-import Page from './Page'
-import NotFound from './NotFound'
+import noImage from '../img/None.jpeg';
+import loading from '../img/loading.png';
+import Page from './Page';
+import NotFound from './NotFound';
 
 const Berries = (props) => {
     const [ berryData, setBerryData ] = useState(undefined);
-    const [ pageData, setPageData ] = useState({});
     const [ getPage, setGetPage ] = useState(0);
 
     let img = null;
@@ -20,37 +20,29 @@ const Berries = (props) => {
     let desc = null;
     let details = [];
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
     useEffect( 
         () => {
             currPage = Number(props.match.params.page);
 
             async function fetchList() {
-                try {
-                    setGetPage(currPage);
-                    
-                    // Get currPage Pokelist
-                    const { data } = await axios.get("https://pokeapi.co/api/v2/berry/?limit=20&offset=" + (currPage * 20).toString());
+                try {                    
+                    // Get currPage Berries Object
+                    const { data } = await axios.get("https://pokeapi.co/api/v2/berry/?limit=15&offset=" + (currPage * 15).toString());
 
-                    // Get details for each berry in data
-                    if (data) {
-                        await data.results.map( async (berry) => {
-                            return await axios.get("https://pokeapi.co/api/v2/item/" + berry.name + '-berry').then( (indiv) => {
-                                details.push(indiv);
-                            });
+                    // Get details for each pokemon in data req
+                    let x = await data.results.map( async (berry) => {
+                        return await axios.get("https://pokeapi.co/api/v2/item/" + berry.name + '-berry').then( (indiv) => {
+                            details.push(indiv);
                         });
-                    };
+                    });
 
-                    await sleep(200);
-
-                    setBerryData(details)
-                    setPageData( {count: data.count, next: data.next, prev: data.previous} );
+                    Promise.all(x).then( (res) => {
+                        console.log("Fetch Complete")
+                        setBerryData( {details: details, pageData: {count: data.count, getPage: currPage} });
+                    });
 
                 } catch (err) {
-                    setBerryData(null)
+                    setBerryData(null);
                     console.log(err);
                 };
             };
@@ -59,8 +51,23 @@ const Berries = (props) => {
         }, [ getPage ]
     );
 
+    // Display as Data is Fetched
+     if (!berryData) {
+        col =  (
+            <Row className = 'page'>
+                <Row>
+                    <h1> LOADING... </h1>
+                </Row>
+                <br />
+                <Row>
+                    <img alt = 'loading' src = {loading} className = 'loading' />
+                </Row>
+            </Row>
+        );
+    };
+
     // List Berry Cards with Sprite & Name
-    if (berryData && (getPage * 20 <= pageData.count)) {
+    if (berryData && (berryData.pageData.getPage * 15 <= berryData.pageData.count)) {
         desc = (
             <p> 
                 Berries are small, juicy, fleshy fruit. As in the real world, a large variety exists in 
@@ -70,7 +77,7 @@ const Berries = (props) => {
             </p>
         );
 
-        col = berryData && berryData.map( (berry) => {
+        col = berryData && berryData.details.map( (berry) => {
             let individual = berry.data;
 
             if (berry.data && berry.data.sprites.default) {
@@ -95,7 +102,7 @@ const Berries = (props) => {
     };
 
     // NotFound Component if no PokeData
-    if (berryData === null || getPage > Math.floor(pageData.count / 20)) {
+    if (berryData === null || (berryData && berryData.pageData.getPage > Math.floor(berryData.pageData.count / 15))) {
         return (
             <NotFound/>
         ); 
@@ -105,16 +112,16 @@ const Berries = (props) => {
     const pageNum = (bool) => {
         let page = 0
         if (bool) {
-            page = getPage + 1;
+            page = berryData.pageData.getPage + 1;
         } else {
-            page = getPage - 1;
+            page = berryData.pageData.getPage - 1;
         };
         setGetPage(page);
     };
 
     // Pagination Component
-    if (getPage <= Math.floor(pageData.count / 20)) {
-        page = <Page pageNum = {[pageNum, getPage, pageData.count, 'berries']} />
+    if (berryData && (berryData.pageData.getPage <= Math.floor(berryData.pageData.count / 15))) {
+        page = <Page pageNum = {[pageNum, berryData.pageData.getPage, berryData.pageData.count, 'berries']} />
     } else {
         page = null;
     };

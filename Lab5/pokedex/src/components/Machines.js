@@ -5,12 +5,12 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container'
 import axios from 'axios';
 import noImage from '../img/None.jpeg'
+import loading from '../img/loading.png'
 import Page from './Page'
 import NotFound from './NotFound'
 
 const Machines = (props) => {
     const [ machineData, setMachineData ] = useState(undefined);
-    const [ pageData, setPageData ] = useState({});
     const [ getPage, setGetPage ] = useState(0);
 
     let currPage = null;
@@ -21,64 +21,71 @@ const Machines = (props) => {
     let details = {};
     let info = [];
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
     useEffect( 
         () => {
             currPage = Number(props.match.params.page);
             
             async function fetchList() {
-                try {
-                    setGetPage(currPage);
-                    
+                try {                    
                     // Get currPage Machine Data
-                    const { data } = await axios.get("https://pokeapi.co/api/v2/machine/?limit=20&offset=" + (currPage * 20).toString());
+                    const { data } = await axios.get("https://pokeapi.co/api/v2/machine/?limit=15&offset=" + (currPage * 15).toString());
 
-                    if (data.results) {
-                        await data.results.map( async (machine) => {
-                            let url = machine.url;
-                            return await axios.get(url).then( async (indiv) => {
-                                info.push(indiv.data);
-                            });
+                    // Get details for each pokemon in Pokelist
+                    let x = data.results.map( async (machine) => {
+                        let url = machine.url;
+                        return await axios.get(url).then( async (indiv) => {
+                            info.push(indiv.data);
                         });
-                    };
-
-                    await sleep(300);
-
-                    info && info.map( (machine) => {
-                        let x = machine.item.url
-                        details[x] = null;
                     });
-                    
-                    let urls = Object.keys(details)
 
-                    if (urls) {
-                        urls.map( async (url) => {
+                    Promise.all(x).then( (res) => { 
+                        console.log("Fetch 2 Complete");
+
+                        info && info.map( (machine) => {
+                            let x = machine.item.url
+                            details[x] = null;
+                        });
+
+                        let urls = Object.keys(details)
+
+                        let y = urls.map( async (url) => {
                             return await axios.get(url).then( (info) => {
                                 details[url] = info
                             });
                         });
-                    };
 
-                    await sleep(300);
-
-
-                    setMachineData([info, details]);
-                    setPageData( {count: data.count, next: data.next, prev: data.previous} );
+                        Promise.all(y).then( (res) => {
+                            console.log('Fetch 3 Complete');
+                            setMachineData( {details: details, info: info, pageData: {count: data.count, getPage: currPage} });
+                        });
+                    });
 
                 } catch (err) {
                     setMachineData(null);
                     console.log(err);
                 };
             };
-
             fetchList();
+
         }, [ props.match.params.page ]
     );
 
-    if (machineData && (getPage * 20 <= pageData.count)) {
+    // Display as Data is Fetched
+    if (!machineData) {
+        col =  (
+            <Row className = 'page'>
+                <Row>
+                    <h1> LOADING... </h1>
+                </Row>
+                <br />
+                <Row>
+                    <img alt = 'loading' src = {loading} className = 'loading' />
+                </Row>
+            </Row>
+        );
+    };
+
+    if (machineData && (machineData.pageData.getPage * 15 <= machineData.pageData.count)) {
         desc = (
             <p>
                 Machines are the representation of items that teach moves to Pokémon. They vary from 
@@ -86,9 +93,9 @@ const Machines = (props) => {
                 single Machine.
             </p>
         )
-        col = machineData[0] && machineData[0].map( (machine, index) => {
+        col = machineData && machineData.info && machineData.info.map( (machine, index) => {
             let ind = machine
-            let ind2 = machineData[1]
+            let ind2 = machineData.details
 
             if (ind2[ind.item.url] && ind2[ind.item.url].data.sprites.default) {
                 img = <img alt = {ind.item.name + "Image"} src = {ind2[ind.item.url].data.sprites.default} />
@@ -115,7 +122,7 @@ const Machines = (props) => {
     };
 
     // NotFound Component if no PokeData
-    if (machineData === null || getPage > Math.floor(pageData.count / 20)) {
+    if (machineData === null || (machineData && machineData.pageData.getPage > Math.floor(machineData.pageData.count / 15))) {
         return (
             <NotFound/>
         ); 
@@ -125,16 +132,16 @@ const Machines = (props) => {
     const pageNum = (bool) => {
         let page = 0
         if (bool) {
-            page = getPage + 1;
+            page = machineData.pageData.getPage + 1;
         } else {
-            page = getPage - 1;
+            page = machineData.pageData.getPage - 1;
         };
         setGetPage(page);
     };
         
     // Pagination Component
-    if (getPage <= Math.floor(pageData.count / 20)) {
-        page = <Page pageNum = {[pageNum, getPage, pageData.count, 'machines']} />
+    if (machineData && (machineData.pageData.getPage <= Math.floor(machineData.pageData.count / 15))) {
+        page = <Page pageNum = {[pageNum, machineData.pageData.getPage, machineData.pageData.count, 'machines']} />
     } else {
         page = null
     };
