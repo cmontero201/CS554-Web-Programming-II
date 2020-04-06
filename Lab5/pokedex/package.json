@@ -1,5 +1,6 @@
 {
   "name": "pokedex",
+  "author": "Christian Montero 10442644",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
