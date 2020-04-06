@@ -98,6 +98,10 @@ a {
   animation: spin infinite 10s linear;
   pointer-events: none;
 }
+.land {
+  color: #282c34;
+  font-weight: 500;
+}
 
 @keyframes spin {
   from {
@@ -106,4 +110,9 @@ a {
   to {
     transform: rotate(359deg);
   }
+}
+.pageItem .page-link , .pageLink .page-link {
+  margin-left: 5px;
+  font-weight: 500;
+  color: black
 }

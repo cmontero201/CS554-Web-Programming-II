@@ -11,6 +11,7 @@ import NotFound from './NotFound'
 
 const Machines = (props) => {
     const [ machineData, setMachineData ] = useState(undefined);
+    const [ pageData, setPageData ] = useState({});
     const [ getPage, setGetPage ] = useState(0);
 
     let currPage = null;
@@ -26,38 +27,31 @@ const Machines = (props) => {
             currPage = Number(props.match.params.page);
             
             async function fetchList() {
-                try {                    
+                try {    
                     // Get currPage Machine Data
-                    const { data } = await axios.get("https://pokeapi.co/api/v2/machine/?limit=15&offset=" + (currPage * 15).toString());
+                    const d = await axios.get("https://pokeapi.co/api/v2/machine/?limit=15&offset=" + (currPage * 15).toString()).then( async ({data}) => {
+                        return Promise.all(await data.results.map( async (machine) => {
+                            let url = machine.url;
+                            return await axios.get(url).then( async (indiv) => {
+                                info.push(indiv.data);
+                            }).then( async (res) => {
+                                info && info.map( (machine) => {
+                                    let x = machine.item.url
+                                    details[x] = null;
+                                });
+                                
+                                let urls = Object.keys(details)
 
-                    // Get details for each pokemon in Pokelist
-                    let x = data.results.map( async (machine) => {
-                        let url = machine.url;
-                        return await axios.get(url).then( async (indiv) => {
-                            info.push(indiv.data);
-                        });
-                    });
-
-                    Promise.all(x).then( (res) => { 
-                        console.log("Fetch 2 Complete");
-
-                        info && info.map( (machine) => {
-                            let x = machine.item.url
-                            details[x] = null;
-                        });
-
-                        let urls = Object.keys(details)
-
-                        let y = urls.map( async (url) => {
-                            return await axios.get(url).then( (info) => {
-                                details[url] = info
+                                return Promise.all(await urls.map( async (url) => {
+                                    return await axios.get(url).then( async (info) => {
+                                    details[url] = info
+                                    }).then( (res) => {
+                                        setMachineData( {details: details, info: info, pageData: {count: data.count, getPage: currPage} });
+                                    });
+                                }));
+                                  
                             });
-                        });
-
-                        Promise.all(y).then( (res) => {
-                            console.log('Fetch 3 Complete');
-                            setMachineData( {details: details, info: info, pageData: {count: data.count, getPage: currPage} });
-                        });
+                        }))
                     });
 
                 } catch (err) {
@@ -67,11 +61,11 @@ const Machines = (props) => {
             };
             fetchList();
 
-        }, [ props.match.params.page ]
+        }, [ getPage ]
     );
 
     // Display as Data is Fetched
-    if (!machineData) {
+    if (!machineData || (machineData && (machineData.pageData.count - (machineData.pageData.getPage * 15) > 15) && machineData.info.length < 15)) {
         col =  (
             <Row className = 'page'>
                 <Row>
@@ -85,15 +79,15 @@ const Machines = (props) => {
         );
     };
 
-    if (machineData && (machineData.pageData.getPage * 15 <= machineData.pageData.count)) {
+    if (machineData && machineData.info.length === 15 && (machineData.pageData.getPage * 15 < machineData.pageData.count)) {
         desc = (
             <p>
                 Machines are the representation of items that teach moves to Pokémon. They vary from 
                 version to version, so it is not certain that one specific TM or HM corresponds to a 
                 single Machine.
             </p>
-        )
-        col = machineData && machineData.info && machineData.info.map( (machine, index) => {
+        );
+        col = machineData && machineData.info && machineData.info.map( (machine) => {
             let ind = machine
             let ind2 = machineData.details
 
@@ -106,7 +100,41 @@ const Machines = (props) => {
             return (
                 <Col className = 'pokeCol' key = {ind.id}>
                     <div className = 'pokeLink'>
-                        <Link to = {`/machines/${ind.id}`}>
+                        <Link className = 'land' to = {`/machines/${ind.id}`}>
+                            {img}
+                            <br />
+                            {ind.item.name}
+                            <br />
+                            <div className = 'sub'>
+                                ({ind.version_group.name})
+                            </div>
+                        </Link>
+                    </div>
+                </Col>
+            );
+        });
+    } else if (machineData && (machineData.pageData.count - (machineData.pageData.getPage * 15) < 15)) {
+        desc = (
+            <p>
+                Machines are the representation of items that teach moves to Pokémon. They vary from 
+                version to version, so it is not certain that one specific TM or HM corresponds to a 
+                single Machine.
+            </p>
+        )
+        col = machineData && machineData.info && machineData.info.map( (machine) => {
+            let ind = machine
+            let ind2 = machineData.details
+
+            if (ind2[ind.item.url] && ind2[ind.item.url].data.sprites.default) {
+                img = <img alt = {ind.item.name + "Image"} src = {ind2[ind.item.url].data.sprites.default} />
+            } else {
+                img = <img className = 'notFound' alt = {ind.item.name + "Image"} src = {noImage} />
+            }
+
+            return (
+                <Col className = 'pokeCol' key = {ind.id}>
+                    <div className = 'pokeLink'>
+                        <Link className = 'land' to = {`/machines/${ind.id}`}>
                             {img}
                             <br />
                             {ind.item.name}
@@ -130,13 +158,14 @@ const Machines = (props) => {
 
     // Pagination Helper Function
     const pageNum = (bool) => {
-        let page = 0
+        let page = machineData.pageData.getPage;
         if (bool) {
-            page = machineData.pageData.getPage + 1;
+            page ++;
+            setGetPage(page);
         } else {
-            page = machineData.pageData.getPage - 1;
+            page --;
+            setGetPage(page);
         };
-        setGetPage(page);
     };
         
     // Pagination Component

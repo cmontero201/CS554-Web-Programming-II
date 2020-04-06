@@ -13,6 +13,7 @@ const Berries = (props) => {
     const [ berryData, setBerryData ] = useState(undefined);
     const [ getPage, setGetPage ] = useState(0);
 
+    let stat = false
     let img = null;
     let col = null;
     let page = null;
@@ -27,18 +28,19 @@ const Berries = (props) => {
             async function fetchList() {
                 try {                    
                     // Get currPage Berries Object
-                    const { data } = await axios.get("https://pokeapi.co/api/v2/berry/?limit=15&offset=" + (currPage * 15).toString());
-
-                    // Get details for each pokemon in data req
-                    let x = await data.results.map( async (berry) => {
-                        return await axios.get("https://pokeapi.co/api/v2/item/" + berry.name + '-berry').then( (indiv) => {
-                            details.push(indiv);
-                        });
-                    });
-
-                    Promise.all(x).then( (res) => {
-                        console.log("Fetch Complete")
-                        setBerryData( {details: details, pageData: {count: data.count, getPage: currPage} });
+                    const d = await axios.get("https://pokeapi.co/api/v2/berry/?limit=15&offset=" + (currPage * 15).toString()).then( async ( {data} ) => {
+                        // Get details for each pokemon in data req
+                        if (data) {
+                            return Promise.all( await data.results.map( async (berry) => {
+                                return await axios.get("https://pokeapi.co/api/v2/item/" + berry.name + '-berry').then( (indiv) => {
+                                    details.push(indiv);
+                                }).then( (res) => {
+                                    setBerryData( {details: details, pageData: {count: data.count, getPage: currPage} });
+                                });
+                            }));
+                        } else {
+                            setBerryData(null);
+                        };
                     });
 
                 } catch (err) {
@@ -52,7 +54,7 @@ const Berries = (props) => {
     );
 
     // Display as Data is Fetched
-     if (!berryData) {
+     if (!berryData || (berryData && (berryData.pageData.count - (berryData.pageData.getPage * 15) > 15) && berryData.details.length < 15)) {
         col =  (
             <Row className = 'page'>
                 <Row>
@@ -67,7 +69,7 @@ const Berries = (props) => {
     };
 
     // List Berry Cards with Sprite & Name
-    if (berryData && (berryData.pageData.getPage * 15 <= berryData.pageData.count)) {
+    if (berryData && berryData.details.length === 15 && (berryData.pageData.getPage * 15 < berryData.pageData.count)) {
         desc = (
             <p> 
                 Berries are small, juicy, fleshy fruit. As in the real world, a large variety exists in 
@@ -78,7 +80,6 @@ const Berries = (props) => {
         );
 
         col = berryData && berryData.details.map( (berry) => {
-            let individual = berry.data;
 
             if (berry.data && berry.data.sprites.default) {
                 img = <img alt = {berry.data.name + "Image"} src = {berry.data.sprites.default} />
@@ -87,13 +88,43 @@ const Berries = (props) => {
             };
 
             return (
-                <Col className = 'pokeCol' key = {individual.id}>
+                <Col className = 'pokeCol' key = {berry.data.id}>
                     <div className = 'berryLink'>
-                        <Link to = {`/berries/${individual.id}`}>
+                        <Link className = 'land' to = {`/berries/${berry.data.id}`}>
                             {img} 
                             <br />
                             <br />
-                            {individual.name}
+                            {berry.data.name}
+                        </Link>
+                    </div>
+                </Col>
+            );
+        });
+    } else if (berryData && (berryData.pageData.count - (berryData.pageData.getPage * 15) < 15)) {
+        desc = (
+            <p> 
+                Berries are small, juicy, fleshy fruit. As in the real world, a large variety exists in 
+                the Pokémon world, with a large range of flavors, names, and effects. Many Berries have 
+                become critical held items in battle, where their various effects include HP and status 
+                condition restoration, stat enhancement, and even damage negation. 
+            </p>
+        );
+
+        col = berryData && berryData.details.map( (berry) => {
+            if (berry.data && berry.data.sprites.default) {
+                img = <img alt = {berry.data.name + "Image"} src = {berry.data.sprites.default} />
+            } else {
+                img = <img className = 'notFound' alt = {berry.data.name + "Image"} src = {noImage} />
+            };
+
+            return (
+                <Col className = 'pokeCol' key = {berry.data.id}>
+                    <div className = 'berryLink'>
+                        <Link className = 'land' to = {`/berries/${berry.data.id}`}>
+                            {img} 
+                            <br />
+                            <br />
+                            {berry.data.name}
                         </Link>
                     </div>
                 </Col>
@@ -110,17 +141,19 @@ const Berries = (props) => {
 
     // Pagination Helper Function
     const pageNum = (bool) => {
-        let page = 0
+        let page = berryData.pageData.getPage;
         if (bool) {
-            page = berryData.pageData.getPage + 1;
+            page ++;
+            setGetPage(page);
         } else {
-            page = berryData.pageData.getPage - 1;
+            page --;
+            setGetPage(page);
         };
-        setGetPage(page);
+        
     };
 
     // Pagination Component
-    if (berryData && (berryData.pageData.getPage <= Math.floor(berryData.pageData.count / 15))) {
+    if (berryData && (currPage <= Math.floor(berryData.pageData.count / 15))) {
         page = <Page pageNum = {[pageNum, berryData.pageData.getPage, berryData.pageData.count, 'berries']} />
     } else {
         page = null;

@@ -16,9 +16,9 @@ const Page = (props) => {
     if (props.pageNum[1] === 0) {
         return (
             <Pagination>
-                <Pagination.Item>  {page + 1} </Pagination.Item>
+                <Pagination.Item className = 'pageItem'>  Page {page + 1} </Pagination.Item>
                 <LinkContainer to = {`/${props.pageNum[3]}/page/${page + 1}`}>
-                    <Pagination.Next  onClick = {getNext} />
+                    <Pagination.Next className = 'pageLink' onClick = {getNext} />
                 </LinkContainer>    
             </Pagination>
         );
@@ -27,9 +27,9 @@ const Page = (props) => {
         return (
             <Pagination>
                 <LinkContainer to = {`/${props.pageNum[3]}/page/${page - 1}`}>
-                        <Pagination.Prev  onClick = {getPrev} />
+                        <Pagination.Prev className = 'pageLink' onClick = {getPrev} />
                     </LinkContainer>  
-                <Pagination.Item>  {page + 1} </Pagination.Item>
+                <Pagination.Item className = 'pageItem'> Page {page + 1} </Pagination.Item>
             </Pagination>
         );
 
@@ -37,11 +37,11 @@ const Page = (props) => {
         return (
             <Pagination>
                 <LinkContainer to = {`/${props.pageNum[3]}/page/${page - 1}`}>
-                    <Pagination.Prev  onClick = {getPrev} />
+                    <Pagination.Prev className = 'pageLink' onClick = {getPrev} />
                 </LinkContainer>    
-                <Pagination.Item>  {page + 1} </Pagination.Item>
+                <Pagination.Item className = 'pageItem' alt = 'current-page'> Page {page + 1} </Pagination.Item>
                 <LinkContainer to = {`/${props.pageNum[3]}/page/${page + 1}`}>
-                    <Pagination.Next  onClick = {getNext} />
+                    <Pagination.Next className = 'pageLink' onClick = {getNext} />
                 </LinkContainer>    
             </Pagination>
         );

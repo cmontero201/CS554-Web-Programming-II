@@ -63,20 +63,20 @@ const Landing = () => {
             <Row className = 'main-links'>
                 <Col> 
                     <Link to = '/pokemon/page/0'> 
-                        <p> Click Here for </p>
+                        <p className = 'land'> Click Here for </p>
                         <img alt = 'PokemonLink' src = {PokemonLink} />
                     </Link>
                 </Col>
                 <Col> 
                     <Link to = '/berries/page/0'>
-                        <p> Click Here for </p>
+                        <p className = 'land'> Click Here for </p>
                         <img alt = 'BerriesLink' src = {BerriesLink} />
                     </Link>
                 </Col>
 
                 <Col> 
                     <Link to = '/machines/page/0'>
-                        <p> Click Here for </p>
+                        <p className = 'land'> Click Here for </p>
                         <img alt = 'MachinesLink' src = {MachinesLink} />
                     </Link>
                 </Col>

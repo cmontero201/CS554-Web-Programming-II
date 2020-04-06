@@ -11,7 +11,6 @@ import NotFound from './NotFound'
 
 const Pokemon = (props) => {
     const [ pokeData, setPokeData ] = useState(undefined);
-    // const [ pageData, setPageData ] = useState({});
     const [ getPage, setGetPage ] = useState(0);
 
     let img = null;
@@ -27,18 +26,18 @@ const Pokemon = (props) => {
             async function fetchList() {
                 try {                    
                     // Get currPage Pokemon Object
-                    const { data } = await axios.get("https://pokeapi.co/api/v2/pokemon/?limit=15&offset=" + (currPage * 15).toString());
-
-                    // Get details for each pokemon in data req
-                    let x =  await data.results.map( async (pokemon) => {
-                        return axios.get("https://pokeapi.co/api/v2/pokemon/" + pokemon.name).then( (indiv) => {
-                            details.push(indiv);
-                        });
-                    });
-
-                    Promise.all(x).then( (res) => { 
-                        console.log("Fetch Complete")
-                        setPokeData( {details: details, pageData: {count: data.count, getPage: currPage} });
+                    const d = await axios.get("https://pokeapi.co/api/v2/pokemon/?limit=15&offset=" + (currPage * 15).toString()).then( async ( {data} ) => {
+                        if (data.results.length > 0) {
+                            return Promise.all(await data.results.map( async (pokemon) => {
+                                return await axios.get("https://pokeapi.co/api/v2/pokemon/" + pokemon.name).then( (indiv) => {
+                                    details.push(indiv);
+                                }).then( async (res) => {
+                                    setPokeData( {details: details, pageData: {count: data.count, getPage: currPage} } ); 
+                                });
+                            }));
+                        } else {
+                            setPokeData(null)
+                        };
                     });
 
                 } catch (err) {
@@ -52,7 +51,7 @@ const Pokemon = (props) => {
     );
     
     // Display as Data is Fetched
-    if (!pokeData) {
+    if (!pokeData || (pokeData && (pokeData.pageData.count - (pokeData.pageData.getPage * 15) > 15) && pokeData.details.length < 15)) {
         col =  (
             <Row className = 'page'>
                 <Row>
@@ -64,10 +63,10 @@ const Pokemon = (props) => {
                 </Row>
             </Row>
         );
-    };
+    } 
 
     // List Pokemon Cards with Sprite & Name
-    if (pokeData && (pokeData.pageData.getPage * 15 <= pokeData.pageData.count)) {
+    if (pokeData && pokeData.details.length === 15 && (pokeData.pageData.getPage * 15 < pokeData.pageData.count)) {
         col = pokeData.details && pokeData.details.map( (pokemon) => {
             let individual = pokemon.data;
             if (pokemon.data && pokemon.data.sprites.front_default) {
@@ -79,7 +78,7 @@ const Pokemon = (props) => {
             return (
                 <Col className = 'pokeCol' key = {individual.id}>
                     <div className = 'pokeLink'>
-                        <Link to = {`/pokemon/${individual.id}`}>
+                        <Link className = 'land' to = {`/pokemon/${individual.id}`}>
                             {img} 
                             <br />
                             {individual.name}
@@ -88,6 +87,28 @@ const Pokemon = (props) => {
                 </Col>
             );
         });
+    } else if (pokeData && (pokeData.pageData.count - (pokeData.pageData.getPage * 15) < 15)) {        
+        col = pokeData.details && pokeData.details.map( (pokemon) => {
+            let individual = pokemon.data;
+            if (pokemon.data && pokemon.data.sprites.front_default) {
+                img = <img alt = {pokemon.data.name + "Image"} src = {pokemon.data.sprites.front_default} />
+            } else {
+                img = <img className = 'notFound' alt = {pokemon.data.name + "Image"} src = {noImage} />
+            };
+
+            return (
+                <Col className = 'pokeCol' key = {individual.id}>
+                    <div className = 'pokeLink'>
+                        <Link className = 'land' to = {`/pokemon/${individual.id}`}>
+                            {img} 
+                            <br />
+                            {individual.name}
+                        </Link>
+                    </div>
+                </Col>
+            );
+        });
+        
     };
 
     // NotFound Component if no PokeData
@@ -99,13 +120,14 @@ const Pokemon = (props) => {
 
     // Pagination Helper Function
     const pageNum = (bool) => {
-        let page = 0
+        let page = pokeData.pageData.getPage
         if (bool) {
-            page = pokeData.pageData.getPage + 1;
+            page ++;
+            setGetPage(page);
         } else {
-            page = pokeData.pageData.getPage - 1;
+            page --;
+            setGetPage(page);
         };
-        setGetPage(page);
     };
      
     // Pagination Component
