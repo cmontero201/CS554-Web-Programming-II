@@ -76,7 +76,7 @@ I do, however, recommend using [React-Bootstrap](https://react-bootstrap.github.
 
 `npm start`
 
-------------------------------
+------------------------------------------------------------------------------------------
 
 ## Available Scripts
 
