@@ -71,7 +71,7 @@ If the person is found, then you will add their ID to a list of recently viewed 
 
 ## Steps to Run
 
-### Install
+### Install Dependencies
 
 `npm install`
 
