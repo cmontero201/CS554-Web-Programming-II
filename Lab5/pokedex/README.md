@@ -68,7 +68,7 @@ I do, however, recommend using [React-Bootstrap](https://react-bootstrap.github.
 
 ## Steps to Run
 
-### Install
+### Install Dependencies
 
 `npm install`
 
