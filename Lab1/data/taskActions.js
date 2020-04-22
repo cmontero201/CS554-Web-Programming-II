@@ -141,7 +141,7 @@ let exportedMethods = {
             "comment": comment
         };
 
-        updatedTaskComment = await taskCollection.updateOne( {_id: taskID} , {$addToSet: {comments: commentObj} } );
+        let updatedTaskComment = await taskCollection.updateOne( {_id: taskID} , {$addToSet: {comments: commentObj} } );
         if (updatedTaskComment.modifiedCount === 0) throw new TypeError(`Unable to update task comments for the task associated with taskID ${taskID}`);
 
         return this.getTaskByID(taskID);
