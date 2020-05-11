@@ -36,7 +36,7 @@ let exportedMethods = {
 
         // const taskCollection: any = await tasks();
         await DbClient.connect()
-        let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+        let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
         let newTask: Task = {
             "_id": uuid.v4(),
@@ -50,7 +50,7 @@ let exportedMethods = {
         const justAdded = await db.collection('tasks').insertOne(newTask);
         if (justAdded.insertedCount === 0) throw new Error("Unable to add task");
 
-        const newTaskID = await justAdded.insertedId;
+        const newTaskID: string = await justAdded.insertedId;
 
         return await this.getTaskByID(newTaskID);
     },
@@ -66,12 +66,12 @@ let exportedMethods = {
 
         // const taskCollection: any = await tasks();
         await DbClient.connect()
-        let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+        let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
         if (y == 0) {
             return [];
         } else {
-            const allTasks = await db.collection('tasks').find({}).limit(y).skip(n).toArray();   //https://www.w3resource.com/mongodb/mongodb-skip-limit.php
+            const allTasks: Object[] = await db.collection('tasks').find({}).limit(y).skip(n).toArray();   //https://www.w3resource.com/mongodb/mongodb-skip-limit.php
             return allTasks;
         }
     },
@@ -82,9 +82,9 @@ let exportedMethods = {
 
             // const taskCollection: any = await tasks();
             await DbClient.connect()
-            let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+            let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
-            const task = await db.collection('tasks').findOne({ _id: taskID });
+            const task: Task = await db.collection('tasks').findOne({ _id: taskID });
             if (task === null) throw new TypeError(`There was no task associated with the given taskID (${taskID}) found`);
 
             return task;
@@ -94,15 +94,15 @@ let exportedMethods = {
         }
     },
 
-    async updateTask(taskID: string, newTitle: string, newDesc: string, newTimeEst: string, newCompStat: string, method: number): Promise<any> {
+    async updateTask(taskID: string, newTitle: string, newDesc: string, newTimeEst: number, newCompStat: boolean, method: number): Promise<any> {
         // Ensure Correct Inputs
         if (!taskID) throw new SyntaxError("A task ID must be provided");
 
         // const taskCollection: any = await tasks();
         await DbClient.connect()
-        let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+        let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
-        const oldTask = await this.getTaskByID(taskID);
+        const oldTask: Task = await this.getTaskByID(taskID);
         let update: updateTask;
 
         // PUT METHOD
@@ -155,7 +155,7 @@ let exportedMethods = {
 
         // const taskCollection: any = await tasks();
         await DbClient.connect()
-        let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+        let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
         const checkTaskExists = await db.collection('tasks').findOne({ _id: taskID });
         if (checkTaskExists === null) throw new TypeError(`There is no task assicated with the taskID ${taskID}`);
@@ -176,17 +176,16 @@ let exportedMethods = {
         if (!taskID) throw new SyntaxError("A task ID must be provided");
         if (!commentID) throw new SyntaxError("A comment ID must be provided");
 
-        // const taskCollection: any = await tasks();
         await DbClient.connect()
-        let db = await DbClient.client.db('Montero-Christian-CS554-Lab1')
+        let db: any = await DbClient.client.db('Montero-Christian-CS554-Lab1')
 
-        let targetTask = await this.getTaskByID(taskID);
+        let targetTask: Task = await this.getTaskByID(taskID);
         if (targetTask === null) throw new TypeError(`There is no task associated with the taskID ${taskID}`);
 
         const removed = await db.collection('tasks').updateOne({ _id: taskID }, { $pull: { comments: { id: commentID } } });
         if (removed.result.nModified === 0) throw new TypeError(`No comment with commentID ${commentID} was found within the task associated with taskID ${taskID}`);
 
-        let x = await this.getTaskByID(taskID);
+        let x: Task = await this.getTaskByID(taskID);
         console.log("Comment Removed");
     }
 }

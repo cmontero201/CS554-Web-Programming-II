@@ -7,7 +7,9 @@ export class Tasks {
         // Get All Tasks Router - DONE
         app.route('/api/tasks').get(async (req: Request, res: Response) => {
             try {
+                console.log(req.query.skip, req.query.take)
                 const taskList = await taskData.getAllTasks(req.query.skip, req.query.take);
+                
                 res.status(200).json(taskList);
 
             } catch (err) {

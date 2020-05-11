@@ -10,7 +10,7 @@
     "start": "node ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Christian Montero",
+  "author": "Christian Montero 10442644",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
