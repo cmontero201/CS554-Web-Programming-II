@@ -66,9 +66,6 @@ I do, however, recommend using [React-Bootstrap](https://react-bootstrap.github.
 
 ## Steps to Run
 
-### Test
-
-`npm test`
 
 ### Run
 
