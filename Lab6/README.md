@@ -139,10 +139,6 @@ You may name the collection however you would like.
 
 ## Steps to Run
 
-### Restore Database
-
-`mongorestore -d shaikh-zubair-cs554-lab06 db/shaikh-zubair-cs554-lab06`
-
 ### Test
 
 `npm test`
